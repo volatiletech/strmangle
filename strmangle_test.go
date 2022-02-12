@@ -583,7 +583,8 @@ func TestShouldTitleCaseEnum(t *testing.T) {
 		Ok  bool
 	}{
 		{"hello_there0", true},
-		{"hEllo", false},
+		{"hEllo", true},
+		{"myCustomType", true},
 		{"_hello", false},
 		{"0hello", false},
 		{"WithCapitalLetters", false},
