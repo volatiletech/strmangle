@@ -537,6 +537,7 @@ func TestParseEnum(t *testing.T) {
 		{"enum.working('one')", "working", []string{"one"}},
 		{"enum.wor_king('one','two')", "wor_king", []string{"one", "two"}},
 		{"enum('with space','two')", "", []string{"with space", "two"}},
+		{"enum('WithCapitalLetters','WITH_CAPS_AND_UNDERSCORES')", "", []string{"WithCapitalLetters", "WITH_CAPS_AND_UNDERSCORES"}},
 	}
 
 	for i, test := range tests {
@@ -564,6 +565,7 @@ func TestIsEnumNormal(t *testing.T) {
 		{[]string{"one", "t#wo2"}, false},
 		{[]string{"1one", "two2"}, false},
 		{[]string{"with space", "two"}, true},
+		{[]string{"WithCapitalLetters", "WITH_CAPS_AND_UNDERSCORES"}, true},
 	}
 
 	for i, test := range tests {
@@ -581,9 +583,12 @@ func TestShouldTitleCaseEnum(t *testing.T) {
 		Ok  bool
 	}{
 		{"hello_there0", true},
-		{"hEllo", false},
+		{"hEllo", true},
+		{"myCustomType", true},
 		{"_hello", false},
 		{"0hello", false},
+		{"WithCapitalLetters", false},
+		{"WITH_CAPS_AND_UNDERSCORES", false},
 	}
 
 	for i, test := range tests {
