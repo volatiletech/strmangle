@@ -18,7 +18,7 @@ var (
 	smartQuoteRgx = regexp.MustCompile(`^(?i)"?[a-z_][_a-z0-9\-]*"?(\."?[_a-z][_a-z0-9]*"?)*(\.\*)?$`)
 
 	rgxEnum            = regexp.MustCompile(`^enum(\.[a-zA-Z0-9_]+)?\((,?'[^']+')+\)$`)
-	rgxEnumIsOK        = regexp.MustCompile(`^(?i)[a-z][a-z0-9_\s]*$`)
+	rgxEnumIsOK        = regexp.MustCompile(`^(?i)[a-z][a-z0-9_.:\s]*$`)
 	rgxEnumShouldTitle = regexp.MustCompile(`^[a-z][a-zA-Z0-9_]*$`)
 	rgxWhitespace      = regexp.MustCompile(`\s`)
 )
