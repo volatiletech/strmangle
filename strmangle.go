@@ -17,9 +17,9 @@ var (
 	idAlphabet    = []byte("abcdefghijklmnopqrstuvwxyz")
 	smartQuoteRgx = regexp.MustCompile(`^(?i)"?[a-z_][_a-z0-9\-]*"?(\."?[_a-z][_a-z0-9]*"?)*(\.\*)?$`)
 
-	rgxEnum            = regexp.MustCompile(`^enum(\.[a-zA-Z0-9_]+)?\((,?'[^']+')+\)$`)
+	rgxEnum            = regexp.MustCompile(`^enum(\.[a-zA-Z0-9_.:]+)?\((,?'[^']+')+\)$`)
 	rgxEnumIsOK        = regexp.MustCompile(`^(?i)[a-z][a-z0-9_.:\s]*$`)
-	rgxEnumShouldTitle = regexp.MustCompile(`^[a-z][a-zA-Z0-9_]*$`)
+	rgxEnumShouldTitle = regexp.MustCompile(`^[a-z][a-zA-Z0-9_.:]*$`)
 	rgxWhitespace      = regexp.MustCompile(`\s`)
 )
 
@@ -237,6 +237,10 @@ var (
 // Note: This method is ugly because it has been highly optimized,
 // we found that it was a fairly large bottleneck when we were using regexp.
 func TitleCase(n string) string {
+	// Replace colons and dots with underscore so the string can be correctly uppercased.
+	replacer := strings.NewReplacer(":", "_", ".", "_")
+	n = replacer.Replace(n)
+
 	// Attempt to fetch from cache
 	mut.RLock()
 	val, ok := titleCaseCache[n]

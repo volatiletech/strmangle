@@ -211,6 +211,8 @@ func TestTitleCase(t *testing.T) {
 		{"id0_uid000_guid0e0", "ID0UID000GUID0E0"},
 		{"ab_5zxc5d5", "Ab5ZXC5D5"},
 		{"Identifier", "Identifier"},
+		{"with.dot", "WithDot"},
+		{"with:colon.dot", "WithColonDot"},
 	}
 
 	for i, test := range tests {
@@ -591,6 +593,9 @@ func TestShouldTitleCaseEnum(t *testing.T) {
 		{"0hello", false},
 		{"WithCapitalLetters", false},
 		{"WITH_CAPS_AND_UNDERSCORES", false},
+		{"with.dot", true},
+		{"with:colon", true},
+		{"with:colon.dot", true},
 	}
 
 	for i, test := range tests {
