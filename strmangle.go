@@ -248,11 +248,9 @@ func TitleCase(n string) string {
 	}
 
 	ln := len(n)
-	name := []byte(n)
-	buf := GetBuffer()
-
 	// Replace non-alphanumeric characters with underscores to allow proper upper-casing.
-	name = ReplaceNonAlphaNumericChars(name, '_')
+	name := ReplaceNonAlphaNumericChars([]byte(n), '_')
+	buf := GetBuffer()
 
 	start := 0
 	end := 0
@@ -725,6 +723,7 @@ func ReplaceReservedWords(word string) string {
 	return word
 }
 
+// ReplaceNonAlphaNumericChars replaces non-alphanumeric characters with provided substitute.
 func ReplaceNonAlphaNumericChars(s []byte, replace rune) []byte {
 	n := 0
 	for _, b := range s {
