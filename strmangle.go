@@ -21,6 +21,7 @@ var (
 	rgxEnumIsOK        = regexp.MustCompile(`^(?i)[a-z][a-z0-9_.:\s]*$`)
 	rgxEnumShouldTitle = regexp.MustCompile(`^[a-z][a-zA-Z0-9_.:]*$`)
 	rgxWhitespace      = regexp.MustCompile(`\s`)
+	rgxNonAlphaNumeric = regexp.MustCompile(`(?i)[^a-z0-9 ]`)
 )
 
 var uppercaseWords = map[string]struct{}{
@@ -237,10 +238,6 @@ var (
 // Note: This method is ugly because it has been highly optimized,
 // we found that it was a fairly large bottleneck when we were using regexp.
 func TitleCase(n string) string {
-	// Replace colons and dots with underscore so the string can be correctly uppercased.
-	replacer := strings.NewReplacer(":", "_", ".", "_")
-	n = replacer.Replace(n)
-
 	// Attempt to fetch from cache
 	mut.RLock()
 	val, ok := titleCaseCache[n]
@@ -248,6 +245,9 @@ func TitleCase(n string) string {
 	if ok {
 		return val
 	}
+
+	// Replace non-alphanumeric characters with underscores to allow proper upper-casing.
+	n = rgxNonAlphaNumeric.ReplaceAllString(n, "_")
 
 	ln := len(n)
 	name := []byte(n)

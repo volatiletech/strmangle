@@ -213,6 +213,7 @@ func TestTitleCase(t *testing.T) {
 		{"Identifier", "Identifier"},
 		{"with.dot", "WithDot"},
 		{"with:colon.dot", "WithColonDot"},
+		{"weird:._enum", "WeirdEnum"},
 	}
 
 	for i, test := range tests {
