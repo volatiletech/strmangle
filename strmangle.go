@@ -238,9 +238,11 @@ var (
 // Note: This method is ugly because it has been highly optimized,
 // we found that it was a fairly large bottleneck when we were using regexp.
 func TitleCase(n string) string {
+	cacheKey := n
+
 	// Attempt to fetch from cache
 	mut.RLock()
-	val, ok := titleCaseCache[n]
+	val, ok := titleCaseCache[cacheKey]
 	mut.RUnlock()
 	if ok {
 		return val
@@ -313,7 +315,7 @@ func TitleCase(n string) string {
 
 	// Cache the title case result
 	mut.Lock()
-	titleCaseCache[n] = ret
+	titleCaseCache[cacheKey] = ret
 	mut.Unlock()
 
 	return ret
