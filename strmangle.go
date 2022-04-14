@@ -21,7 +21,6 @@ var (
 	rgxEnumIsOK        = regexp.MustCompile(`^(?i)[a-z][a-z0-9_.:\s]*$`)
 	rgxEnumShouldTitle = regexp.MustCompile(`^[a-z][a-zA-Z0-9_.:]*$`)
 	rgxWhitespace      = regexp.MustCompile(`\s`)
-	rgxNonAlphaNumeric = regexp.MustCompile(`(?i)[^a-z0-9 ]`)
 )
 
 var uppercaseWords = map[string]struct{}{
@@ -248,12 +247,12 @@ func TitleCase(n string) string {
 		return val
 	}
 
-	// Replace non-alphanumeric characters with underscores to allow proper upper-casing.
-	n = rgxNonAlphaNumeric.ReplaceAllString(n, "_")
-
 	ln := len(n)
 	name := []byte(n)
 	buf := GetBuffer()
+
+	// Replace non-alphanumeric characters with underscores to allow proper upper-casing.
+	name = ReplaceNonAlphaNumericChars(name, '_')
 
 	start := 0
 	end := 0
@@ -724,6 +723,19 @@ func ReplaceReservedWords(word string) string {
 		return word + "_"
 	}
 	return word
+}
+
+func ReplaceNonAlphaNumericChars(s []byte, replace rune) []byte {
+	n := 0
+	for _, b := range s {
+		if ('a' <= b && b <= 'z') || ('A' <= b && b <= 'Z') || ('0' <= b && b <= '9') || b == ' ' {
+			s[n] = b
+		} else {
+			s[n] = byte(replace)
+		}
+		n++
+	}
+	return s[:n]
 }
 
 // RemoveDuplicates from a string slice
