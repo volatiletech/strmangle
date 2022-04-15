@@ -22,6 +22,10 @@ var (
 	rgxAlphanumeric = regexp.MustCompile("[^a-zA-Z0-9]+")
 )
 
+func AddUppercase(s string) {
+	uppercaseWords[s] = struct{}{}
+}
+
 var uppercaseWords = map[string]struct{}{
 	"acl":   {},
 	"api":   {},
@@ -41,6 +45,10 @@ var uppercaseWords = map[string]struct{}{
 	"uri":   {},
 	"url":   {},
 	"utf8":  {},
+}
+
+func AddReserved(s string) {
+	reservedWords[s] = struct{}{}
 }
 
 var reservedWords = map[string]struct{}{
