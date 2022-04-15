@@ -554,50 +554,6 @@ func TestParseEnum(t *testing.T) {
 	}
 }
 
-func TestIsEnumNormal(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		Vals []string
-		Ok   bool
-	}{
-		{[]string{"o1ne", "two2"}, true},
-		{[]string{"one", "t#wo2"}, false},
-		{[]string{"1one", "two2"}, false},
-		{[]string{"with space", "two"}, true},
-		{[]string{"WithCapitalLetters", "WITH_CAPS_AND_UNDERSCORES"}, true},
-	}
-
-	for i, test := range tests {
-		if got := IsEnumNormal(test.Vals); got != test.Ok {
-			t.Errorf("%d) want: %t got: %t, %#v", i, test.Ok, got, test.Vals)
-		}
-	}
-}
-
-func TestShouldTitleCaseEnum(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		Val string
-		Ok  bool
-	}{
-		{"hello_there0", true},
-		{"hEllo", true},
-		{"myCustomType", true},
-		{"_hello", false},
-		{"0hello", false},
-		{"WithCapitalLetters", false},
-		{"WITH_CAPS_AND_UNDERSCORES", false},
-	}
-
-	for i, test := range tests {
-		if got := ShouldTitleCaseEnum(test.Val); got != test.Ok {
-			t.Errorf("%d) want: %t got: %t, %v", i, test.Ok, got, test.Val)
-		}
-	}
-}
-
 func TestReplaceReservedWords(t *testing.T) {
 	tests := []struct {
 		Word    string
