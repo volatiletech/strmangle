@@ -121,6 +121,11 @@ func TestSortByKeys(t *testing.T) {
 			[]string{"stuff", "thing"},
 			[]string{"thing", "stuff"},
 		},
+		{
+			[]string{"stuff"},
+			[]string{"stuff", "thing"},
+			[]string{"stuff"},
+		},
 	}
 
 	for i, test := range tests {
