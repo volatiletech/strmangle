@@ -98,6 +98,39 @@ func TestSetMerge(t *testing.T) {
 	}
 }
 
+func TestSetIntersect(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		A []string
+		B []string
+		C []string
+	}{
+		{
+			[]string{"a", "b", "c"},
+			[]string{"a", "b", "c"},
+			[]string{"a", "b", "c"},
+		},
+		{
+			[]string{"a", "b", "c"},
+			[]string{"b", "c", "d"},
+			[]string{"b", "c"},
+		},
+		{
+			[]string{"a", "b", "c"},
+			[]string{"d", "e", "f"},
+			[]string{},
+		},
+	}
+
+	for i, test := range tests {
+		intersection := SetIntersect(test.A, test.B)
+		if !reflect.DeepEqual(test.C, intersection) {
+			t.Errorf("[%d] mismatch:\nWant: %#v\nGot: %#v", i, test.C, intersection)
+		}
+	}
+}
+
 func TestSortByKeys(t *testing.T) {
 	t.Parallel()
 
