@@ -187,6 +187,7 @@ func newBoilRuleset() *inflect.Ruleset {
 	rs.AddSingularExact("quizzes", "quiz", true)
 	rs.AddSingular("databases", "database")
 	rs.AddSingular("menus", "menu")
+	rs.AddSingular("personas", "persona")
 	rs.AddIrregular("person", "people")
 	rs.AddIrregular("man", "men")
 	rs.AddIrregular("child", "children")
