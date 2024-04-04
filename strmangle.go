@@ -573,6 +573,31 @@ func WhereClause(lq, rq string, start int, cols []string) string {
 	return buf.String()
 }
 
+// WhereInClause returns the where clause using start as the $ flag index
+// For example, if start was 2 output would be: "col IN ($2,$3)"
+func WhereInClause(lq, rq string, start int, cols []string, count int) string {
+	buf := GetBuffer()
+	defer PutBuffer(buf)
+
+	useIndexPlaceholders := true
+	if start == 0 {
+		start = 1
+		useIndexPlaceholders = false
+	}
+
+	for i, c := range cols {
+		buf.WriteString(fmt.Sprintf(`%s%s%s IN (`, lq, c, rq))
+		buf.WriteString(Placeholders(useIndexPlaceholders, count, start+i*count, 1))
+		buf.WriteByte(')')
+
+		if i < len(cols)-1 {
+			buf.WriteString(" AND ")
+		}
+	}
+
+	return buf.String()
+}
+
 // WhereClauseRepeated returns the where clause repeated with OR clause using start as the $ flag index
 // For example, if start was 2 output would be: "(colthing=$2 AND colstuff=$3) OR (colthing=$4 AND colstuff=$5)"
 func WhereClauseRepeated(lq, rq string, start int, cols []string, count int) string {
