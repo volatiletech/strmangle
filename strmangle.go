@@ -579,6 +579,8 @@ func WhereInClause(lq, rq string, start int, cols []string, count int) string {
 	buf := GetBuffer()
 	defer PutBuffer(buf)
 
+	// Start is used as the dialect switch for $ or ?
+	// Because Placeholders will not accept 0 as a start index, set it to 1 and set useIndexPlaceholders appropriately
 	useIndexPlaceholders := true
 	if start == 0 {
 		start = 1
