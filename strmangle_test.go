@@ -349,6 +349,46 @@ func TestSetParamNames(t *testing.T) {
 	}
 }
 
+func TestWhereInClause(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		lq       string
+		rq       string
+		start    int
+		cols     []string
+		count    int
+		expected string
+	}{
+		{
+			name:     "Test with indexed placeholders",
+			lq:       `"`,
+			rq:       `"`,
+			start:    1,
+			cols:     []string{"col1", "col2"},
+			count:    2,
+			expected: `"col1" IN ($1,$2) AND "col2" IN ($3,$4)`,
+		},
+		{
+			name:     "Test with question mark placeholders",
+			lq:       `"`,
+			rq:       `"`,
+			start:    0,
+			cols:     []string{"col1", "col2"},
+			count:    2,
+			expected: `"col1" IN (?,?) AND "col2" IN (?,?)`,
+		},
+	}
+
+	for _, tt := range tests {
+		result := WhereInClause(tt.lq, tt.rq, tt.start, tt.cols, tt.count)
+		if result != tt.expected {
+			t.Errorf("WhereInClause() = %v, want %v", result, tt.expected)
+		}
+	}
+}
+
 func TestWhereClause(t *testing.T) {
 	t.Parallel()
 
