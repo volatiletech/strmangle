@@ -723,7 +723,8 @@ func ParseEnumVals(s string) []string {
 
 	startIndex := strings.IndexByte(s, '(')
 	s = s[startIndex+2 : len(s)-2]
-	return strings.Split(s, "','")
+	sanitized := strings.ReplaceAll(s, "/", "_")
+	return strings.Split(sanitized, "','")
 }
 
 // ParseEnumName returns the name portion of an enum if it exists

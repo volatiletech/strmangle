@@ -578,6 +578,7 @@ func TestParseEnum(t *testing.T) {
 		{"enum.wor_king('one','two')", "wor_king", []string{"one", "two"}},
 		{"enum('with space','two')", "", []string{"with space", "two"}},
 		{"enum('WithCapitalLetters','WITH_CAPS_AND_UNDERSCORES')", "", []string{"WithCapitalLetters", "WITH_CAPS_AND_UNDERSCORES"}},
+		{"enum('/StartSlash','Slash/Between','SlashAtTheEnd/')", "", []string{"_StartSlash", "Slash_Between", "SlashAtTheEnd_"}},
 	}
 
 	for i, test := range tests {
