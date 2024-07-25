@@ -176,8 +176,74 @@ func TestPlural(t *testing.T) {
 	}
 }
 
-func TestTitleCase(t *testing.T) {
+func TestTrimLeftDigits(t *testing.T) {
 	t.Parallel()
+
+	tests := []struct {
+		In  string
+		Out string
+	}{
+		// No changes:
+		{"hello_there", "hello_there"},
+		{"", ""},
+		{"_1", "_1"},
+		{"im_a_teapot418", "im_a_teapot418"},
+		// Trimmed left:
+		{"1", ""},
+		{"42", ""},
+		{"42a", "a"},
+		{"42a7", "a7"},
+		{"1_", "_"},
+		{"418im_a_teapot", "im_a_teapot"},
+	}
+
+	for i, test := range tests {
+		if out := TrimLeftDigits(test.In); out != test.Out {
+			t.Errorf("[%d] (%s) Out was wrong: %q, want: %q", i, test.In, out, test.Out)
+		}
+	}
+}
+
+func clearTitleCaseCache() {
+	mut.RLock()
+	titleCaseCache = map[string]string{}
+	mut.RUnlock()
+}
+
+func TestTitleCaseFull(t *testing.T) {
+	defer clearTitleCaseCache()
+
+	tests := []struct {
+		In  string
+		Out string
+	}{
+		// No changes:
+		{"", ""},
+		// Trimmed left:
+		{"_1", ""},
+		{"1", ""},
+		{"42", ""},
+		{"1_", ""},
+		// Title cased & trimmed:
+		{"42a", "A"},
+		{"42a7", "A7"},
+		{"_1a", "A"},
+		{"hello_there", "HelloThere"},
+		{"im_a_teapot418", "ImATeapot418"},
+		{"im_418_years_old", "Im418YearsOld"},
+		{"im_418years_old", "Im418yearsOld"},
+		{"418im_a_teapot", "ImATeapot"},
+	}
+
+	for i, test := range tests {
+		if out := TitleCaseFull(test.In); out != test.Out {
+			t.Errorf("[%d] (%s) Out was wrong: %q, want: %q", i, test.In, out, test.Out)
+		}
+	}
+}
+
+func TestTitleCase(t *testing.T) {
+	defer clearTitleCaseCache()
 
 	tests := []struct {
 		In  string
@@ -222,8 +288,40 @@ func TestTitleCase(t *testing.T) {
 	}
 }
 
+func TestCamelCaseFull(t *testing.T) {
+	defer clearTitleCaseCache()
+
+	tests := []struct {
+		In  string
+		Out string
+	}{
+		// No changes:
+		{"", ""},
+		// Trimmed left:
+		{"_1", ""},
+		{"1", ""},
+		{"42", ""},
+		{"1_", ""},
+		// Camel cased & trimmed:
+		{"42a", "a"},
+		{"42a7", "a7"},
+		{"_1a", "a"},
+		{"hello_there", "helloThere"},
+		{"im_a_teapot418", "imATeapot418"},
+		{"im_418_years_old", "im418YearsOld"},
+		{"im_418years_old", "im418yearsOld"},
+		{"418im_a_teapot", "imATeapot"},
+	}
+
+	for i, test := range tests {
+		if out := CamelCaseFull(test.In); out != test.Out {
+			t.Errorf("[%d] (%s) Out was wrong: %q, want: %q", i, test.In, out, test.Out)
+		}
+	}
+}
+
 func TestCamelCase(t *testing.T) {
-	t.Parallel()
+	defer clearTitleCaseCache()
 
 	tests := []struct {
 		In  string
@@ -271,7 +369,7 @@ func TestCamelCase(t *testing.T) {
 }
 
 func TestTitleCaseIdentifier(t *testing.T) {
-	t.Parallel()
+	defer clearTitleCaseCache()
 
 	tests := []struct {
 		In  string

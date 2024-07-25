@@ -236,6 +236,20 @@ var (
 	titleCaseCache = map[string]string{}
 )
 
+// TrimLeftDigits is for sanitizing the final output of an golang identifier:
+// trimming digits at the start.
+//
+// This func should be applied after everything else to create the final output,
+// or for the leftmost building block of an identifier.
+func TrimLeftDigits(n string) string {
+	for i, r := range n {
+		if !unicode.IsDigit(r) {
+			return n[i:]
+		}
+	}
+	return ""
+}
+
 // sanitizeForIdentifier expects a string to be used to generate an identifier.
 // Accordingly, this func replaces any characters that would create an invalid identifier with '_'.
 func sanitizeForIdentifier(n string) string {
@@ -249,7 +263,14 @@ func sanitizeForIdentifier(n string) string {
 		}
 		cleanN += char
 	}
-	return cleanN
+	return strings.TrimLeft(cleanN, "_") // Discard all leading '_'.
+}
+
+// TitleCaseFull is like TitleCase, but trims digits on the leftmost of the string.
+//
+// This func should only be used on full identifier names, not identifier name building blocks.
+func TitleCaseFull(n string) string {
+	return titleCase(n, true)
 }
 
 // TitleCase changes a snake-case variable name
@@ -257,9 +278,16 @@ func sanitizeForIdentifier(n string) string {
 // titleCase also fully uppercases "ID" components of names, for example
 // "column_name_id" to "ColumnNameID".
 //
+// Use this func for e.g. building blocks of an identifier name.
+// If you are working with a complete name, use TitleCaseFull() instead.
+//
 // Note: This method is ugly because it has been highly optimized,
 // we found that it was a fairly large bottleneck when we were using regexp.
 func TitleCase(n string) string {
+	return titleCase(n, false)
+}
+
+func titleCase(n string, trimLeftDigits bool) string {
 	// Attempt to fetch from cache
 	mut.RLock()
 	val, ok := titleCaseCache[n]
@@ -269,6 +297,9 @@ func TitleCase(n string) string {
 	}
 
 	cleanN := sanitizeForIdentifier(n)
+	if trimLeftDigits {
+		cleanN = TrimLeftDigits(cleanN)
+	}
 
 	// If the string is made up of only uppercase letters and underscores,
 	// then return as is and do not strip the underscores
@@ -305,6 +336,12 @@ func TitleCase(n string) string {
 		}
 
 		word := name[start:end]
+
+		if trimLeftDigits {
+			word = []byte(TrimLeftDigits(string(word)))
+			trimLeftDigits = false
+		}
+
 		wordLen := len(word)
 		var vowels bool
 
@@ -365,17 +402,34 @@ func Ignore(table, column string, ignoreList map[string]struct{}) bool {
 	return false
 }
 
+// CamelCaseFull is like CamelCase, but trims digits on the leftmost of the string.
+//
+// This func should only be used on full identifier names, not identifier name building blocks.
+func CamelCaseFull(name string) string {
+	return camelCase(name, true)
+}
+
 // CamelCase takes a variable name in the format of "var_name" and converts
 // it into a go styled variable name of "varName".
 // camelCase also fully uppercases "ID" components of names, for example
 // "var_name_id" to "varNameID". It will also lowercase the first letter
 // of the name in the case where it's fed something that starts with uppercase.
+//
+// Use this func for e.g. building blocks of an identifier name.
+// If you are working with a complete name, use CamelCaseFull() instead.
 func CamelCase(name string) string {
+	return camelCase(name, false)
+}
+
+func camelCase(name string, trimLeftDigits bool) string {
 	buf := GetBuffer()
 	defer PutBuffer(buf)
 
 	name = sanitizeForIdentifier(name)
-	name = strings.TrimLeft(name, "_") // Discard all leading '_'.
+	if trimLeftDigits {
+		name = TrimLeftDigits(name)
+		name = strings.TrimLeft(name, "_") // Discard all leading '_' (again).
+	}
 	if name == "" {
 		return ""
 	}
