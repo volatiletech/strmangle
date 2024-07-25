@@ -236,6 +236,22 @@ var (
 	titleCaseCache = map[string]string{}
 )
 
+// sanitizeForIdentifier expects a string to be used to generate an identifier.
+// Accordingly, this func replaces any characters that would create an invalid identifier with '_'.
+func sanitizeForIdentifier(n string) string {
+	var cleanN string
+	for _, r := range n {
+		var char string
+		if unicode.IsLetter(r) || unicode.IsDigit(r) {
+			char = string(r)
+		} else {
+			char = "_"
+		}
+		cleanN += char
+	}
+	return cleanN
+}
+
 // TitleCase changes a snake-case variable name
 // into a go styled object variable name of "ColumnName".
 // titleCase also fully uppercases "ID" components of names, for example
@@ -252,16 +268,7 @@ func TitleCase(n string) string {
 		return val
 	}
 
-	var cleanN string
-	for _, r := range n {
-		var char string
-		if unicode.IsLetter(r) || unicode.IsDigit(r) {
-			char = string(r)
-		} else {
-			char = "_"
-		}
-		cleanN += char
-	}
+	cleanN := sanitizeForIdentifier(n)
 
 	// If the string is made up of only uppercase letters and underscores,
 	// then return as is and do not strip the underscores
@@ -367,39 +374,43 @@ func CamelCase(name string) string {
 	buf := GetBuffer()
 	defer PutBuffer(buf)
 
-	// Discard all leading '_'
-	index := -1
-	for i := 0; i < len(name); i++ {
-		if name[i] != '_' {
-			index = i
-			break
-		}
-	}
-
-	if index != -1 {
-		name = name[index:]
-	} else {
+	name = sanitizeForIdentifier(name)
+	name = strings.TrimLeft(name, "_") // Discard all leading '_'.
+	if name == "" {
 		return ""
 	}
 
-	index = -1
-	for i := 0; i < len(name); i++ {
-		if name[i] == '_' {
-			index = i
-			break
-		}
-	}
-
+	index := strings.IndexByte(name, '_')
 	if index == -1 {
+		// No underscores left: Take the rest of the string and return as-is.
 		buf.WriteString(strings.ToLower(string(name[0])))
 		if len(name) > 1 {
 			buf.WriteString(name[1:])
 		}
 	} else {
+		// We got some underscores left.
+
+		// For now, take the first character:
 		buf.WriteString(strings.ToLower(string(name[0])))
+
 		if len(name) > 1 {
-			buf.WriteString(name[1:index])
-			buf.WriteString(TitleCase(name[index+1:]))
+			// Get the next character that is not '_':
+			rest := -1
+			for i := index; i < len(name); i++ {
+				if name[i] != '_' {
+					rest = i
+					break
+				}
+			}
+
+			if index > 1 {
+				buf.WriteString(name[1:index])
+			}
+
+			if rest >= 0 {
+				buf.WriteString(TitleCase(name[rest:]))
+			}
+			// Else: The rest consists of just underscores, therefore we discard them.
 		}
 	}
 

@@ -185,6 +185,8 @@ func TestTitleCase(t *testing.T) {
 	}{
 		{"hello_there", "HelloThere"},
 		{"", ""},
+		{"418im_a_teapot", "418imATeapot"},
+		{"Slash/Test", "SlashTest"},
 		{"____a____a___", "AA"},
 		{"_a_a_", "AA"},
 		{"fun_id", "FunID"},
@@ -228,6 +230,9 @@ func TestCamelCase(t *testing.T) {
 		Out string
 	}{
 		{"hello_there_sunny", "helloThereSunny"},
+		{"418im_a_teapot", "418imATeapot"},
+		{"418_im_a_teapot", "418ImATeapot"},
+		{"Slash/Test", "slashTest"},
 		{"", ""},
 		{"a_", "a"},
 		{"aaa_", "aaa"},
