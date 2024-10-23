@@ -266,13 +266,13 @@ func TitleCase(n string) string {
 	// If the string is made up of only uppercase letters and underscores,
 	// then return as is and do not strip the underscores
 	// This keeps strings such as PUBLIC_KEY readable and not make it PUBLICKEY
-	if len(n) == len(cleanN) && n == strings.ToUpper(n) {
+	if cleanN == strings.ToUpper(cleanN) {
 		// Cache the title case as the same string
 		mut.Lock()
-		titleCaseCache[n] = n
+		titleCaseCache[n] = cleanN
 		mut.Unlock()
 
-		return n
+		return cleanN
 	}
 
 	name := []byte(cleanN)
