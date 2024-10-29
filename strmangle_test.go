@@ -265,6 +265,7 @@ func TestTitleCase(t *testing.T) {
 		{"ssn", "SSN"},
 		{"tz", "TZ"},
 		{"thing_guid", "ThingGUID"},
+		{"thing_guids", "ThingGuids"},
 		{"guid_thing", "GUIDThing"},
 		{"thing_guid_thing", "ThingGUIDThing"},
 		{"id", "ID"},
