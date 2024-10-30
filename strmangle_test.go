@@ -204,6 +204,25 @@ func TestTrimLeftDigits(t *testing.T) {
 	}
 }
 
+func TestSanitizeForIdentifier(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		In  string
+		Out string
+	}{
+		// No changes:
+		{"hello_there&", "hello_there_"},
+		{"FOO/BAR", "FOO_BAR"},
+	}
+
+	for i, test := range tests {
+		if out := sanitizeForIdentifier(test.In); out != test.Out {
+			t.Errorf("[%d] (%s) Out was wrong: %q, want: %q", i, test.In, out, test.Out)
+		}
+	}
+}
+
 func clearTitleCaseCache() {
 	mut.RLock()
 	titleCaseCache = map[string]string{}
@@ -233,6 +252,7 @@ func TestTitleCaseFull(t *testing.T) {
 		{"im_418_years_old", "Im418YearsOld"},
 		{"im_418years_old", "Im418yearsOld"},
 		{"418im_a_teapot", "ImATeapot"},
+		{"FOO/BAR", "FOO_BAR"},
 	}
 
 	for i, test := range tests {
